@@ -28,6 +28,11 @@ for i in inds
   @info "$printprefix $(i)/$(length(exprs))"
   push!(output, ret)
 end
+
+@info "$printprefix Finished, writing results..."
+
 open("scripts/output_A_$(n)__$(n_workers)_$(worker_id).txt", "w") do file
   print(file, output.dict)
 end
+
+@info "$printprefix Done."
