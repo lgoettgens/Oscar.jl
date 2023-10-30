@@ -5,13 +5,19 @@ using Oscar
 n = parse(Int, ARGS[2])
 n_workers = parse(Int, ARGS[3])
 worker_id = parse(Int, ARGS[4])
-
 @req 1 <= worker_id <= n_workers "worker_id must be between 1 and n_workers"
+
+const printprefix = "Worker $(lpad(string(worker_id), ndigits(n_workers))):"
+
+@info "$printprefix Oscar loaded..."
 
 exprs = [
   Int.(el) for
   el in reduced_expressions(longest_element(weyl_group(:A, n)); up_to_commutation=true)
 ]
+
+@info "$printprefix Reduced expressions calculated..."
+
 output = MSet{Vector{Vector{ZZRingElem}}}()
 inds = worker_id:n_workers:length(exprs)
 for i in inds
@@ -19,7 +25,7 @@ for i in inds
     BasisLieHighestWeight.basis_lie_highest_weight(
       :A, n, [1 for _ in 1:n], exprs[i]
     ).minkowski_gens
-  @info "$(div(100*i,length(exprs)))%, $(i)/$(length(exprs))"
+  @info "$printprefix $(i)/$(length(exprs))"
   push!(output, ret)
 end
 open("scripts/output_A_$(n)__$(n_workers)_$(worker_id).txt", "w") do file
