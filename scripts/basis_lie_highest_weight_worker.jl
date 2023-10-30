@@ -11,21 +11,18 @@ const printprefix = "Worker $(lpad(string(worker_id), ndigits(n_workers))):"
 
 @info "$printprefix Oscar loaded..."
 
-exprs = [
-  Int.(el) for
-  el in reduced_expressions(longest_element(weyl_group(:A, n)); up_to_commutation=true)
-]
-
-@info "$printprefix Reduced expressions calculated..."
-
 output = MSet{Vector{Vector{ZZRingElem}}}()
-inds = worker_id:n_workers:length(exprs)
-for i in inds
+for (i, expr) in enumerate(
+  reduced_expressions(longest_element(weyl_group(:A, n)); up_to_commutation=true)
+)
+  if ((i - 1) % n_workers) + 1 != worker_id
+    continue
+  end
   ret =
     BasisLieHighestWeight.basis_lie_highest_weight(
-      :A, n, [1 for _ in 1:n], exprs[i]
+      :A, n, [1 for _ in 1:n], Int.(expr)
     ).minkowski_gens
-  @info "$printprefix $(i)/$(length(exprs))"
+  @info "$printprefix Task $(i)"
   push!(output, ret)
 end
 
