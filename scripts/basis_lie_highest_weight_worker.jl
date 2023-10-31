@@ -1,7 +1,6 @@
 using Oscar
 
 function main(args)
-  GC.enable_logging(true)
   @req length(args) == 4 "Need 4 arguments: \"A\", n, n_workers, worker_id"
   @req args[1] == "A" "First argument must be \"A\""
   n = parse(Int, args[2])

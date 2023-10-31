@@ -10,7 +10,7 @@ function main(args)
 
   for worker_id in 1:n_workers
     path = "scripts/output_A_$(n)__$(n_workers)_$(worker_id).txt"
-    @req isfile(path) "File $(path) does not exist"
+    isfile(path) || error("File $(path) does not exist")
     dict = eval(Meta.parse(read(path, String)))::Dict{Vector{Vector{ZZRingElem}},Int}
     output += MSet(dict)
   end
