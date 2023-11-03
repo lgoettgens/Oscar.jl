@@ -16,7 +16,7 @@ function main(args)
 
   for worker_id in worker_ids
     worker = run(
-      `$(Base.julia_cmd()) --project=. scripts/basis_lie_highest_weight_worker.jl $(args[1]) $(args[2]) $(args[3]) $(worker_id)`,
+      `$(Base.julia_cmd()) --project=. scripts/basis_lie_highest_weight_worker.jl A $(n) $(n_workers) $(worker_id)`,
       stdin,
       stdout,
       stderr;
@@ -29,7 +29,7 @@ function main(args)
   @info "All workers finished, collecting results..."
 
   run(
-    `$(Base.julia_cmd()) --project=. scripts/basis_lie_highest_weight_addresults.jl $(args[1]) $(args[2]) $(args[3])`,
+    `$(Base.julia_cmd()) --project=. scripts/basis_lie_highest_weight_addresults.jl A $(n)`,
     stdin,
     stdout,
     stderr;

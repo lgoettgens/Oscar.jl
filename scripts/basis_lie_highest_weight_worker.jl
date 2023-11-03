@@ -12,25 +12,28 @@ function main(args)
 
   @info "$printprefix Oscar loaded..."
 
-  output = MSet{Vector{Vector{ZZRingElem}}}()
+  path = "scripts/output/A_$(n)"
+  mkpath(path)
+
   for (i, expr) in enumerate(
     reduced_expressions(longest_element(weyl_group(:A, n)); up_to_commutation=true)
   )
     if ((i - 1) % n_workers) + 1 != worker_id
       continue
     end
+    filename = joinpath(path, "$(i).txt")
+    if isfile(filename)
+      @info "$printprefix File $filename already exists, skipping..."
+      continue
+    end
     ret =
       BasisLieHighestWeight.basis_lie_highest_weight(
         :A, n, [1 for _ in 1:n], Int.(expr)
       ).minkowski_gens
+    open(filename, "w") do file
+      print(file, ret)
+    end
     @info "$printprefix Task $(i)"
-    push!(output, ret)
-  end
-
-  @info "$printprefix Finished, writing results..."
-
-  open("scripts/output_A_$(n)__$(n_workers)_$(worker_id).txt", "w") do file
-    print(file, output.dict)
   end
 
   @info "$printprefix Done."

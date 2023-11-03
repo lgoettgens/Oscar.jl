@@ -5,5 +5,3 @@
 /docs/src/Experimental/
 Manifest.toml
 .DS_Store
-
-scripts/output_*.txt

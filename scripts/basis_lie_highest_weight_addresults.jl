@@ -1,21 +1,25 @@
 using Oscar
 
 function main(args)
-  @req length(args) == 3 "Need 3 arguments: \"A\", n, n_workers"
+  @req length(args) == 2 "Need 2 arguments: \"A\", n"
   @req args[1] == "A" "First argument must be \"A\""
   n = parse(Int, args[2])
-  n_workers = parse(Int, args[3])
+
+  path = "scripts/output/A_$(n)"
 
   output = MSet{Vector{Vector{ZZRingElem}}}()
 
-  for worker_id in 1:n_workers
-    path = "scripts/output_A_$(n)__$(n_workers)_$(worker_id).txt"
-    isfile(path) || error("File $(path) does not exist")
-    dict = eval(Meta.parse(read(path, String)))::Dict{Vector{Vector{ZZRingElem}},Int}
-    output += MSet(dict)
+  for (i, expr) in enumerate(
+    reduced_expressions(longest_element(weyl_group(:A, n)); up_to_commutation=true)
+  )
+    filename = joinpath(path, "$(i).txt")
+    isfile(filename) || error("File $filename does not exist")
+
+    entry = eval(Meta.parse(read(filename, String)))::Vector{Vector{ZZRingElem}}
+    push!(output, entry)
   end
 
-  open("scripts/output_A_$(n).txt", "w") do file
+  open(joinpath(dirname(path), "A_$(n).txt"), "w") do file
     print(file, output.dict)
   end
 end
