@@ -108,6 +108,10 @@ struct WeylGroupElem
   end
 end
 
+function WeylGroupElem(R::RootSystem, word::Vector{Int})
+  return WeylGroupElem(weyl_group(R), word)
+end
+
 function WeylGroupElem(W::WeylGroup, word::Vector{Int})
   @req all(1 <= i <= ngens(W) for i in word) "word $word contains invalid generators"
 
@@ -170,6 +174,33 @@ function Base.:(^)(x::WeylGroupElem, n::Int)
   return px
 end
 
+@doc raw"""
+    Base.:(<)(x::WeylGroupElem, y::WeylGroupElem)
+
+Returns whether `x` is smaller than `y` with respect to the Bruhat order.
+"""
+function Base.:(<)(x::WeylGroupElem, y::WeylGroupElem)
+  @req parent(x) === parent(y) "$x, $y must belong to the same Weyl group"
+
+  if length(x) >= length(y)
+    return false
+  end
+
+  # x < y in the Bruhat order, iff some (not necessarily connected) subexpression
+  # of a reduced decomposition of y, is a reduced decomposition of x
+  j = length(x)
+  for i in length(y):-1:1
+    if word(y)[i] == word(x)[j]
+      j -= 1
+      if j == 0
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
 function Base.:(==)(x::WeylGroupElem, y::WeylGroupElem)
   return x.parent === y.parent && x.word == y.word
 end
@@ -182,6 +213,10 @@ function Base.deepcopy_internal(x::WeylGroupElem, dict::IdDict)
   y = WeylGroupElem(x.parent, deepcopy_internal(x.word, dict))
   dict[x] = y
   return y
+end
+
+function Base.getindex(x::WeylGroupElem, i::Int)
+  return word(x)[i]
 end
 
 function Base.hash(x::WeylGroupElem, h::UInt)
@@ -235,6 +270,7 @@ function parent_type(::Type{WeylGroupElem})
   return WeylGroup
 end
 
+# rename to reduced decompositions ?
 function reduced_expressions(x::WeylGroupElem; up_to_commutation::Bool=false)
   return ReducedExpressionIterator(x, up_to_commutation)
 end
