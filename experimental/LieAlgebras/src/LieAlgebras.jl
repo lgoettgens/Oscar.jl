@@ -267,3 +267,55 @@ export trivial_module
 export universal_enveloping_algebra
 export weyl_group
 export word
+
+function part_c_cartan_matrix()
+  cm = cartan_matrix((:A, 3), (:E, 8), (:C, 8), (:E, 6), (:B, 3))
+  for (i, j) in [
+    (19, 27),
+    (27, 6),
+    (10, 3),
+    (18, 22),
+    (20, 9),
+    (13, 27),
+    (22, 21),
+    (21, 3),
+    (22, 24),
+    (23, 2),
+    (19, 19),
+    (22, 26),
+    (12, 10),
+    (3, 24),
+    (26, 19),
+    (10, 10),
+    (20, 27),
+    (5, 11),
+    (16, 2),
+    (12, 4),
+    (16, 14),
+    (7, 7),
+    (13, 9),
+    (18, 1),
+    (18, 10),
+    (16, 19),
+    (9, 9),
+    (20, 7),
+    (13, 5),
+    (1, 1),
+    (9, 5),
+    (12, 3),
+    (10, 5),
+    (22, 2),
+    (1, 25),
+    (24, 17),
+    (1, 13),
+    (6, 6),
+    (18, 10),
+    (20, 24),
+  ]
+    swap_cols!(cm, i, j)
+    swap_rows!(cm, i, j)
+  end
+  return cm
+end
+
+export part_c_cartan_matrix
