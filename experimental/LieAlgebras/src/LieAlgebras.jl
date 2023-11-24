@@ -318,4 +318,22 @@ function part_c_cartan_matrix()
   return cm
 end
 
+function conjugate_to_fundamental_chamber_with_elem(x::RootSpaceElem)
+  conj = deepcopy(x)
+  cm = sparse_matrix(QQMatrix(cartan_matrix(root_system(x))))
+  word = Int[]
+  s = 1
+  while s <= rank(root_system(x))
+    if (cm * transpose(conj.vec))[s] < 0
+      push!(word, s)
+      reflect!(conj, s)
+      s = 1
+    else
+      s += 1
+    end
+  end
+  return conj, WeylGroupElem(root_system(x), reverse(word))
+end
+
+export conjugate_to_fundamental_chamber_with_elem
 export part_c_cartan_matrix

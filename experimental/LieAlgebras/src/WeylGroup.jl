@@ -130,6 +130,17 @@ function Base.:(*)(x::WeylGroupElem, y::WeylGroupElem)
   return WeylGroupElem(x.parent, word)
 end
 
+function Base.:(*)(x::WeylGroupElem, y::RootSpaceElem)
+  @req root_system(parent(x)) === root_system(y) "Incompatible root systems"
+
+  y2 = deepcopy(y)
+  for s in Iterators.reverse(x.word)
+    reflect!(y2, Int(s))
+  end
+
+  return y2
+end
+
 function Base.:(*)(x::WeylGroupElem, w::WeightLatticeElem)
   @req root_system(parent(x)) === root_system(w) "Incompatible root systems"
 
