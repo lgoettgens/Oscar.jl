@@ -318,6 +318,66 @@ function part_c_cartan_matrix()
   return cm
 end
 
+function part_d_cartan_matrix()
+  cm = cartan_matrix((:A, 5), (:B, 3), (:B, 3), (:G, 2), (:E, 8), (:D, 13))
+  for (i, j) in [
+    (18, 34),
+    (27, 9),
+    (34, 24),
+    (12, 15),
+    (5, 17),
+    (2, 11),
+    (18, 16),
+    (2, 19),
+    (13, 20),
+    (9, 33),
+    (9, 6),
+    (20, 6),
+    (25, 31),
+    (8, 25),
+    (30, 8),
+    (26, 14),
+    (31, 33),
+    (31, 3),
+    (10, 27),
+    (3, 21),
+    (30, 1),
+    (1, 3),
+    (25, 1),
+    (31, 11),
+    (11, 12),
+    (6, 28),
+    (28, 25),
+    (31, 22),
+    (3, 23),
+    (34, 31),
+    (1, 8),
+    (13, 31),
+    (1, 11),
+    (26, 22),
+    (9, 17),
+    (13, 27),
+    (24, 13),
+    (31, 26),
+    (6, 1),
+    (25, 8),
+    (1, 30),
+    (16, 31),
+    (9, 29),
+    (1, 2),
+    (17, 6),
+    (25, 1),
+    (11, 21),
+    (1, 28),
+    (17, 9),
+    (32, 14),
+  ]
+    swap_cols!(cm, i, j)
+    swap_rows!(cm, i, j)
+  end
+  return cm
+end
+
 function conjugate_to_fundamental_chamber_with_elem(x::RootSpaceElem)
   conj = deepcopy(x)
   cm = sparse_matrix(QQMatrix(cartan_matrix(root_system(x))))
@@ -337,3 +397,4 @@ end
 
 export conjugate_to_fundamental_chamber_with_elem
 export part_c_cartan_matrix
+export part_d_cartan_matrix
