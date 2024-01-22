@@ -46,11 +46,11 @@ function matrix_group(F::Ring, m::Int, V::AbstractVector{T}; check::Bool=true) w
    return G
 end
 
-matrix_group(R::Ring, m::Int, V::T...; check::Bool=true) where T<:Union{MatElem,MatrixGroupElem} = matrix_group(R, m, collect(V); check)
+matrix_group(R::Ring, m::Int, V::Union{MatElem,MatrixGroupElem}...; check::Bool=true) = matrix_group(R, m, collect(V); check)
 
 matrix_group(V::AbstractVector{T}; check::Bool=true) where T<:Union{MatElem,MatrixGroupElem} = matrix_group(base_ring(V[1]), nrows(V[1]), V; check)
 
-matrix_group(V::T...; check::Bool=true) where T<:Union{MatElem,MatrixGroupElem} = matrix_group(collect(V); check)
+matrix_group(V::Union{MatElem,MatrixGroupElem}...; check::Bool=true) = matrix_group(collect(V); check)
 
 # For `general_linear_group` etc. the degree comes first, so we should also provide that option
 matrix_group(m::Int, R::Ring) = matrix_group(R, m)
@@ -80,12 +80,10 @@ mat_elem_type(::Type{MatrixGroup{S,T}}) where {S,T} = T
 _gap_filter(::Type{<:MatrixGroup}) = GAP.Globals.IsMatrixGroup
 
 elem_type(::Type{MatrixGroup{S,T}}) where {S,T} = MatrixGroupElem{S,T}
-elem_type(::MatrixGroup{S,T}) where {S,T} = MatrixGroupElem{S,T}
 Base.eltype(::Type{MatrixGroup{S,T}}) where {S,T} = MatrixGroupElem{S,T}
 
 # `parent_type` is defined and documented in AbstractAlgebra.
-parent_type(::Type{T}) where T<:MatrixGroupElem{RE,S} where {RE,S} = MatrixGroup{RE,S}
-parent_type(::T) where T<:MatrixGroupElem{RE,S} where {RE,S} = MatrixGroup{RE,S}
+parent_type(::Type{MatrixGroupElem{S,T}}) where {S,T} = MatrixGroup{S,T}
 
 
 function Base.deepcopy_internal(x::MatrixGroupElem, dict::IdDict)
@@ -562,7 +560,7 @@ end
 
 Return the general linear group of dimension `n` over the ring `R` respectively the field `GF(q)`.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -573,7 +571,7 @@ julia> H = general_linear_group(2,F)
 GL(2,7)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [3 0; 0 1]
  [6 1; 6 0]
 
@@ -596,7 +594,7 @@ end
 
 Return the special linear group of dimension `n` over the ring `R` respectively the field `GF(q)`.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -607,7 +605,7 @@ julia> H = special_linear_group(2,F)
 SL(2,7)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [3 0; 0 5]
  [6 1; 6 0]
 
@@ -631,7 +629,7 @@ end
 Return the symplectic group of dimension `n` over the ring `R` respectively the
 field `GF(q)`. The dimension `n` must be even.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -642,7 +640,7 @@ julia> H = symplectic_group(2,F)
 Sp(2,7)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [3 0; 0 5]
  [6 1; 6 0]
 
@@ -668,7 +666,7 @@ Return the orthogonal group of dimension `n` over the ring `R` respectively the
 field `GF(q)`, and of type `e`, where `e` in {`+1`,`-1`} for `n` even and `e`=`0`
 for `n` odd. If `n` is odd, `e` can be omitted.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -679,7 +677,7 @@ julia> H = symplectic_group(2,F)
 Sp(2,7)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [3 0; 0 5]
  [6 1; 6 0]
 
@@ -720,7 +718,7 @@ Return the special orthogonal group of dimension `n` over the ring `R` respectiv
 the field `GF(q)`, and of type `e`, where `e` in {`+1`,`-1`} for `n` even and
 `e`=`0` for `n` odd. If `n` is odd, `e` can be omitted.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -731,7 +729,7 @@ julia> H = special_orthogonal_group(1,2,F)
 SO+(2,7)
 
 julia> gens(H)
-3-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+3-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [3 0; 0 5]
  [5 0; 0 3]
  [1 0; 0 1]
@@ -773,7 +771,7 @@ Return the Omega group of dimension `n` over the field `GF(q)` of type `e`,
 where `e` in {`+1`,`-1`} for `n` even and `e`=`0` for `n` odd. If `n` is odd,
 `e` can be omitted.
 
-Currently, this function only supports rings of type `fqPolyRepField`.
+Currently, this function only supports rings of type `FqField`.
 
 # Examples
 ```jldoctest
@@ -784,7 +782,7 @@ julia> H = omega_group(1,2,F)
 Omega+(2,7)
 
 julia> gens(H)
-1-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+1-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [2 0; 0 4]
 
 ```
@@ -828,7 +826,7 @@ julia> H = unitary_group(2,3)
 GU(2,3)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [o 0; 0 2*o]
  [2 2*o+2; 2*o+2 0]
 ```
@@ -854,7 +852,7 @@ julia> H = special_unitary_group(2,3)
 SU(2,3)
 
 julia> gens(H)
-2-element Vector{MatrixGroupElem{fqPolyRepFieldElem, fqPolyRepMatrix}}:
+2-element Vector{MatrixGroupElem{FqFieldElem, FqMatrix}}:
  [1 2*o+2; 0 1]
  [0 2*o+2; 2*o+2 0]
 ```

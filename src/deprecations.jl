@@ -265,14 +265,14 @@ function PolyhedralFan{T}(Rays::AbstractCollection[RayVector],
                           Incidence::IncidenceMatrix; 
                           non_redundant::Bool = false) where T<:scalar_types
   Base.depwarn("'PolyhedralFan{$T}(x...)' is deprecated, use 'polyhedral_fan($T, x...)' instead.", :PolyhedralFan)
-  return polyhedral_fan(T, Rays, LS, Incidence; non_redundant=non_redundant)
+  return polyhedral_fan(T, Incidence, Rays, LS; non_redundant=non_redundant)
 end
 function PolyhedralFan{T}(Rays::AbstractCollection[RayVector], Incidence::IncidenceMatrix; non_redundant::Bool = false) where T<:scalar_types
   Base.depwarn("'PolyhedralFan{$T}(x...)' is deprecated, use 'polyhedral_fan($T, x...)' instead.", :PolyhedralFan)
-  return polyhedral_fan(T, Rays, Incidence; non_redundant=non_redundant)
+  return polyhedral_fan(T, Incidence, Rays; non_redundant=non_redundant)
 end
-@deprecate PolyhedralFan(Rays::AbstractCollection[RayVector], LS::Union{AbstractCollection[RayVector], Nothing}, Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Rays, LS, Incidence; non_redundant = non_redundant)
-@deprecate PolyhedralFan(Rays::AbstractCollection[RayVector], Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Rays, Incidence; non_redundant = non_redundant)
+@deprecate PolyhedralFan(Rays::AbstractCollection[RayVector], LS::Union{AbstractCollection[RayVector], Nothing}, Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Incidence, Rays, LS; non_redundant = non_redundant)
+@deprecate PolyhedralFan(Rays::AbstractCollection[RayVector], Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Incidence, Rays; non_redundant = non_redundant)
 function PolyhedralFan(itr::AbstractVector{Cone{T}}) where T<:scalar_types
   Base.depwarn("'PolyhedralFan' is deprecated, use 'polyhedral_fan' instead.", :PolyhedralFan)
   return polyhedral_fan(itr)
@@ -283,11 +283,11 @@ function PolyhedralFan(C::Cone{T}) where T<:scalar_types
 end
 function PolyhedralFan{T}(Rays::AbstractCollection[RayVector], LS::AbstractCollection[RayVector], Incidence::Matrix{Bool}) where T<:scalar_types
   Base.depwarn("'PolyhedralFan{$T}(x...)' is deprecated, use 'polyhedral_fan($T, x...)' instead.", :PolyhedralFan)
-  return polyhedral_fan(T, Rays, LS, Incidence)
+  return polyhedral_fan(T, Incidence, Rays, LS)
 end
 function PolyhedralFan{T}(Rays::AbstractCollection[RayVector], Incidence::Matrix{Bool}) where T<:scalar_types
   Base.depwarn("'PolyhedralFan{$T}(x...)' is deprecated, use 'polyhedral_fan($T, x...)' instead.", :PolyhedralFan)
-  return polyhedral_fan(T, Rays, Incidence)
+  return polyhedral_fan(T, Incidence, Rays)
 end
 
 # SubdivisionOfPoints -> subdivision_of_points
@@ -494,3 +494,72 @@ end
 @deprecate revlex(v::AbstractVector{<:MPolyRingElem}) invlex(v::AbstractVector{<:MPolyRingElem})
 @deprecate negrevlex(R::MPolyRing) ngeinvlex(R::MPolyRing)
 @deprecate negrevlex(v::AbstractVector{<:MPolyRingElem}) neginvlex(v::AbstractVector{<:MPolyRingElem})
+
+@deprecate polyhedral_fan(f::scalar_type_or_field, Rays::AbstractCollection[RayVector], Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(f, Incidence, Rays, nothing; non_redundant)
+@deprecate polyhedral_fan(Rays::AbstractCollection[RayVector], LS::Union{AbstractCollection[RayVector], Nothing}, Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Incidence, Rays, LS; non_redundant)
+@deprecate polyhedral_fan(Rays::AbstractCollection[RayVector], Incidence::IncidenceMatrix; non_redundant::Bool = false) polyhedral_fan(QQFieldElem, Incidence, Rays; non_redundant)
+@deprecate polyhedral_fan(f::scalar_type_or_field,
+                        Rays::AbstractCollection[RayVector], 
+                        LS::Union{AbstractCollection[RayVector], Nothing},
+                        Incidence::IncidenceMatrix; 
+                        non_redundant::Bool = false) polyhedral_fan(f, Incidence, Rays, LS; non_redundant)
+@deprecate polyhedral_fan(f::scalar_type_or_field, Rays::AbstractCollection[RayVector], LS::AbstractCollection[RayVector], Incidence::Matrix{Bool}) polyhedral_fan(f, Rays, LS, IncidenceMatrix(Polymake.IncidenceMatrix(Incidence)))
+@deprecate polyhedral_fan(f::scalar_type_or_field, Rays::AbstractCollection[RayVector], Incidence::Matrix{Bool}) polyhedral_fan(f, Rays, IncidenceMatrix(Polymake.IncidenceMatrix(Incidence)))
+@deprecate normal_toric_variety(rays::AbstractCollection[RayVector], max_cones::IncidenceMatrix; non_redundant::Bool = false) normal_toric_variety(max_cones, rays; non_redundant)
+
+@deprecate components(X::AbsSpec) connected_components(X::AbsSpec)
+
+Base.@deprecate_binding is_finitelygenerated is_finitely_generated
+Base.@deprecate_binding has_is_finitelygenerated has_is_finitely_generated
+Base.@deprecate_binding set_is_finitelygenerated set_is_finitely_generated
+
+Base.@deprecate_binding is_obviouslyabelian is_obviously_abelian false
+
+Base.@deprecate_binding is_almostsimple is_almost_simple
+Base.@deprecate_binding has_is_almostsimple has_is_almost_simple
+Base.@deprecate_binding set_is_almostsimple set_is_almost_simple
+
+# Deprecated after 0.14.*
+Base.@deprecate_binding is_isomorphic_with_symmetric_group is_isomorphic_to_symmetric_group
+Base.@deprecate_binding has_is_isomorphic_with_symmetric_group has_is_isomorphic_to_symmetric_group
+Base.@deprecate_binding set_is_isomorphic_with_symmetric_group set_is_isomorphic_to_symmetric_group
+
+Base.@deprecate_binding is_isomorphic_with_alternating_group is_isomorphic_to_alternating_group
+Base.@deprecate_binding has_is_isomorphic_with_alternating_group has_is_isomorphic_to_alternating_group
+Base.@deprecate_binding set_is_isomorphic_with_alternating_group set_is_isomorphic_to_alternating_group
+
+Base.@deprecate_binding proj_space projective_space
+
+Base.@deprecate_binding are_algebraically_independent is_algebraically_independent_with_relations
+          
+Base.@deprecate ambient_ring(U::AbsMultSet) ring(U)
+
+# Deprecated after 0.15
+Base.@deprecate_binding _compute_glueing_base_change _compute_gluing_base_change
+Base.@deprecate_binding _compute_inherited_glueing _compute_inherited_gluing
+Base.@deprecate_binding _compute_toric_glueing _compute_toric_gluing
+Base.@deprecate_binding add_glueing! add_gluing!
+Base.@deprecate_binding base_glueing base_gluing
+Base.@deprecate_binding glueing_domains gluing_domains
+Base.@deprecate_binding glueing_graph gluing_graph
+Base.@deprecate_binding glueing_morphisms gluing_morphisms
+Base.@deprecate_binding glueings gluings
+Base.@deprecate_binding inherit_glueings! inherit_gluings!
+Base.@deprecate_binding is_connected_glueing is_connected_gluing
+Base.@deprecate_binding pruned_glueing_graph pruned_gluing_graph
+Base.@deprecate_binding underlying_glueing underlying_gluing
+Base.@deprecate_binding update_glueing_graph update_gluing_graph
+Base.@deprecate_binding AbsGlueing AbsGluing
+Base.@deprecate_binding AbsProjectiveGlueing AbsProjectiveGluing
+Base.@deprecate_binding BaseChangeGlueingData BaseChangeGluingData
+Base.@deprecate_binding CoveredProjectiveGlueingData CoveredProjectiveGluingData
+Base.@deprecate_binding Glueing Gluing
+Base.@deprecate_binding InheritGlueingData InheritGluingData
+Base.@deprecate_binding LazyProjectiveGlueing LazyProjectiveGluing
+Base.@deprecate_binding ProjectiveGlueing ProjectiveGluing
+Base.@deprecate_binding ProjectiveGlueingData ProjectiveGluingData
+Base.@deprecate_binding SimpleGlueing SimpleGluing
+Base.@deprecate_binding ToricGlueingData ToricGluingData
+
+Base.@deprecate_binding jacobi_matrix jacobian_matrix
+Base.@deprecate_binding jacobi_ideal jacobian_ideal
