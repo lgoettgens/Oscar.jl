@@ -99,3 +99,9 @@ function _vec(M::MatElem)
   end
   return r
 end
+
+function monomial(R::MPolyRing, v::Vector{Int})
+  b = MPolyBuildCtx(R)
+  push_term!(b, one(base_ring(R)), v)
+  return finish(b)
+end
