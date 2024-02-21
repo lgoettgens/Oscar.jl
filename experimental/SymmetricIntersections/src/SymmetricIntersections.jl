@@ -1,7 +1,0 @@
-include("exports.jl")
-include("types.jl")
-include("elevators.jl")
-include("representations.jl")
-include("symmetric_grassmannians.jl")
-include("homogeneous_polynomial_actions.jl")
-include("printings.jl")
