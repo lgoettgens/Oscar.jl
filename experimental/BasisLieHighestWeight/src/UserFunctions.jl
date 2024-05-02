@@ -551,3 +551,20 @@ function basis_coordinate_ring_kodaira_ffl(
     L, highest_weight, degree, operators, monomial_ordering
   )
 end
+
+
+
+function basis_lie_highest_weight_demazure(
+  type::Symbol,
+  rank::Int,
+  highest_weight::Vector{Int},
+  reduced_expression::Vector{Int};
+  monomial_ordering::Symbol=:degrevlex,
+)
+  L = lie_algebra(type, rank)
+  chevalley_basis = chevalley_basis_gap(L)
+  operators = operators_demazure(L, chevalley_basis, reduced_expression)
+  return basis_lie_highest_weight_compute(
+    L, highest_weight, operators, monomial_ordering; reduced_expression=reduced_expression
+  )
+end

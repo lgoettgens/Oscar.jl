@@ -29,6 +29,7 @@ calculated by checking which dominant weight lies in the orbit of the weight und
 
 The weights are given as coefficients to the fundamental weights $\omega_i$.
 """
+# TODO Use here Demazure module
 function get_dim_weightspace(L::LieAlgebraStructure, highest_weight::Vector{ZZRingElem})
   # calculate dimension for dominant weights with GAP
   root_system = root_system_gap(L)
@@ -43,6 +44,7 @@ function get_dim_weightspace(L::LieAlgebraStructure, highest_weight::Vector{ZZRi
       weightspaces[highest_weight - weight] = dim
     end
   end
+
   return weightspaces
 end
 
@@ -72,6 +74,7 @@ function get_lattice_points_of_weightspace(
   # [   |              |    ]       [  res  ] 
   # [   |              |    ]       [   |   ]
   # where res[i] >= 0 for all i
+
   n = length(root_weights)
   m = length(weight)
 
@@ -109,6 +112,7 @@ on the highest weight vector.
 function compute_zero_coordinates(
   bir_sequence::BirationalSequence, highest_weight::Vector{ZZRingElem}
 )
+
   n = length(bir_sequence.weights_alpha)
   m = length(highest_weight)
   non_zeros = Set{Int}(findall(!iszero, highest_weight))

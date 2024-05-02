@@ -2,7 +2,8 @@ function basis_lie_highest_weight_compute(
   L::LieAlgebraStructure,
   highest_weight::Vector{Int},
   operators::Vector{<:GAP.Obj},     # operators are represented by our monomials. x_i is connected to operators[i]
-  monomial_ordering_symb::Symbol,
+  monomial_ordering_symb::Symbol;
+  reduced_expression::Vector{Int}=[-1] 
 )
   # Pseudocode:
 
@@ -66,8 +67,10 @@ function basis_lie_highest_weight_compute(
     highest_weight,
     monomial_ordering,
     calc_highest_weight,
-    no_minkowski,
+    no_minkowski; 
+    reduced_expression=reduced_expression
   )
+
   # monomials = sort(collect(set_mon); lt=((m1, m2) -> cmp(monomial_ordering, m1, m2) < 0))
   minkowski_gens = sort(collect(no_minkowski); by=(gen -> (sum(gen), reverse(gen))))
   # output
@@ -188,7 +191,8 @@ function compute_monomials(
   highest_weight::Vector{ZZRingElem},
   monomial_ordering::MonomialOrdering,
   calc_highest_weight::Dict{Vector{ZZRingElem},Set{ZZMPolyRingElem}},
-  no_minkowski::Set{Vector{ZZRingElem}},
+  no_minkowski::Set{Vector{ZZRingElem}};
+  reduced_expression::Vector{Int}=[-1],
 )
   # This function calculates the monomial basis M_{highest_weight} recursively. The recursion saves all computed 
   # results in calc_highest_weight and we first check, if we already encountered this highest weight in a prior step. 
@@ -215,7 +219,7 @@ function compute_monomials(
   if is_fundamental(highest_weight) || sum(abs.(highest_weight)) == 0
     push!(no_minkowski, highest_weight)
     set_mon = add_by_hand(
-      L, birational_sequence, ZZx, highest_weight, monomial_ordering, Set{ZZMPolyRingElem}()
+      L, birational_sequence, ZZx, highest_weight, monomial_ordering, Set{ZZMPolyRingElem}(); reduced_expression=reduced_expression
     )
     push!(calc_highest_weight, highest_weight => set_mon)
     return set_mon
@@ -243,7 +247,8 @@ function compute_monomials(
         lambda_1,
         monomial_ordering,
         calc_highest_weight,
-        no_minkowski,
+        no_minkowski; 
+        reduced_expression=reduced_expression
       )
       mon_lambda_2 = compute_monomials(
         L,
@@ -252,7 +257,8 @@ function compute_monomials(
         lambda_2,
         monomial_ordering,
         calc_highest_weight,
-        no_minkowski,
+        no_minkowski; 
+        reduced_expression=reduced_expression
       )
       # Minkowski-sum: M_{lambda_1} + M_{lambda_2} \subseteq M_{highest_weight}, if monomials get identified with 
       # points in ZZ^n
@@ -264,7 +270,7 @@ function compute_monomials(
     if length(set_mon) < gap_dim
       push!(no_minkowski, highest_weight)
       set_mon = add_by_hand(
-        L, birational_sequence, ZZx, highest_weight, monomial_ordering, set_mon
+        L, birational_sequence, ZZx, highest_weight, monomial_ordering, set_mon; reduced_expression=reduced_expression
       )
     end
 
@@ -324,6 +330,7 @@ function add_new_monomials!(
       birational_sequence.weights_alpha, w_to_alpha(L, weight_w), zero_coordinates
     ),
   )
+
   isempty(poss_mon_in_weightspace) && error("The input seems to be invalid.")
   poss_mon_in_weightspace = sort(
     poss_mon_in_weightspace; lt=((m1, m2) -> cmp(monomial_ordering, m1, m2) < 0)
@@ -335,6 +342,7 @@ function add_new_monomials!(
     i += 1
   end
   number_mon_in_weightspace = length(set_mon_in_weightspace[weight_w])
+
   # go through possible monomials one by one and check if it extends the basis
   while number_mon_in_weightspace < dim_weightspace
     i += 1
@@ -385,22 +393,32 @@ function add_by_hand(
   ZZx::ZZMPolyRing,
   highest_weight::Vector{ZZRingElem},
   monomial_ordering::MonomialOrdering,
-  set_mon::Set{ZZMPolyRingElem},
+  set_mon::Set{ZZMPolyRingElem};
+  reduced_expression::Vector{Int},
 )
   # This function calculates the missing monomials by going through each non full weightspace and adding possible 
   # monomials manually by computing their corresponding vectors and checking if they enlargen the basis.
 
-  # initialization
-  # matrices g_i for (g_1^a_1 * ... * g_k^a_k)*v
   matrices_of_operators = tensor_matrices_of_operators(
     L, highest_weight, birational_sequence.operators
+    # L, highest_weight_twisted_true, birational_sequence.operators
   )
   space = Dict(ZZ(0) * birational_sequence.weights_w[1] => sparse_matrix(QQ)) # span of basis vectors to keep track of the basis
-  v0 = sparse_row(ZZ, [(1, 1)])  # starting vector v
-
-  push!(set_mon, ZZx(1))
+  
+  # starting vector v
   # required monomials of each weightspace
-  weightspaces = get_dim_weightspace(L, highest_weight)
+  # identify coordinates that are trivially zero because of the action on the generator
+  if reduced_expression == [-1]  # Regular case
+    v0 = sparse_row(ZZ, [(1, 1)])
+    weightspaces = get_dim_weightspace(L, highest_weight)
+    zero_coordinates = compute_zero_coordinates(birational_sequence, highest_weight)
+  else  # Demazure
+    v0, extremal_weight = demazure_vw(L, reduced_expression, highest_weight, matrices_of_operators)
+    weightspaces = get_dim_weightspace_demazure(L, highest_weight, extremal_weight, reduced_expression)  # demazure
+    zero_coordinates = Int[]
+  end
+  push!(set_mon, ZZx(1))
+
   # sort the monomials from the minkowski-sum by their weightspaces
   set_mon_in_weightspace = Dict{Vector{ZZRingElem},Set{ZZMPolyRingElem}}()
   for (weight_w, _) in weightspaces
@@ -429,7 +447,7 @@ function add_by_hand(
   end
 
   # identify coordinates that are trivially zero because of the action on the generator
-  zero_coordinates = compute_zero_coordinates(birational_sequence, highest_weight)
+  # zero_coordinates = compute_zero_coordinates(birational_sequence, highest_weight)
 
   # calculate new monomials
   for weight_w in weights_with_non_full_weightspace
@@ -570,4 +588,14 @@ function compute_sub_weights(highest_weight::Vector{ZZRingElem})
     sort!(sub_weights_w; by=x -> sum((x) .^ 2))
     return sub_weights_w
   end
+end
+
+function operators_demazure(
+  L::LieAlgebraStructure,
+  chevalley_basis::NTuple{3,Vector{GAP.Obj}},
+  birational_sequence::Vector{Int},
+)
+  @req all(i -> 1 <= i <= num_positive_roots(L), birational_sequence) "Entry of birational_sequence out of bounds"
+
+  return [chevalley_basis[1][i] for i in birational_sequence]
 end
