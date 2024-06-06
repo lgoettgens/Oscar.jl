@@ -180,7 +180,7 @@ end
 @doc raw"""
     lie_algebra(R::Field, struct_consts::Matrix{SRow{elem_type(R)}}, s::Vector{<:VarName}; cached::Bool, check::Bool) -> AbstractLieAlgebra{elem_type(R)}
 
-Construct the Lie algebra over the ring `R` with structure constants `struct_consts`
+Construct the Lie algebra over the field `R` with structure constants `struct_consts`
 and with basis element names `s`.
 
 The Lie bracket on the newly constructed Lie algebra `L` is determined by the structure
@@ -208,7 +208,7 @@ end
 @doc raw"""
     lie_algebra(R::Field, struct_consts::Array{elem_type(R),3}, s::Vector{<:VarName}; cached::Bool, check::Bool) -> AbstractLieAlgebra{elem_type(R)}
 
-Construct the Lie algebra over the ring `R` with structure constants `struct_consts`
+Construct the Lie algebra over the field `R` with structure constants `struct_consts`
 and with basis element names `s`.
 
 The Lie bracket on the newly constructed Lie algebra `L` is determined by the structure
@@ -304,10 +304,16 @@ end
 @doc raw"""
     lie_algebra(R::Field, rs::RootSystem; cached::Bool) -> AbstractLieAlgebra{elem_type(R)}
 
-Construct the simple Lie algebra over the ring `R` with the given root system `rs`.
+Construct a simple Lie algebra over the field `R` with the root system `rs`.
 The internally used basis of this Lie algebra is the Chevalley basis.
 
 If `cached` is `true`, the constructed Lie algebra is cached (keyed by its structure constants).
+
+The experienced user may supply a boolean vector of length `n_positive_roots(rs) - n_simple_roots(rs)`
+via the kwarg `extraspecial_pair_signs::Vector{Bool}` to specify the concrete Lie algebra to be constructed.
+If $(\alpha,\beta)$ is the extraspecial pair for the non-simple root `root(rs, i)`,
+then $\varepsilon_{\alpha,\beta} = 1$ iff `extraspecial_pair_signs[i - n_simple_roots(rs)] = true`.
+For the used notation and the definition of extraspecial pairs, see [CMT04](@ref).
 """
 function lie_algebra(
   R::Field,
@@ -390,6 +396,7 @@ function _struct_consts(R::Field, rs::RootSystem, extraspecial_pair_signs)
 end
 
 function _N_matrix(rs::RootSystem, extraspecial_pair_signs::Vector{Bool})
+  # computes the matrix N_αβ from CTM04 Ch. 3 indexed by root indices
   nroots = n_roots(rs)
   npos = n_positive_roots(rs)
   nsimp = n_simple_roots(rs)
@@ -442,7 +449,7 @@ function _N_matrix(rs::RootSystem, extraspecial_pair_signs::Vector{Bool})
       while is_root_with_index(beta_j - p * alpha_i)[1]
         p += 1
       end
-      N[i, j] = Int(sign(t1 - t2) * sign(N[l, l_comp]) * p) # typo in paper
+      N[i, j] = Int(sign(t1 - t2) * sign(N[l, l_comp]) * p) # typo in CMT04
       N[j, i] = -N[i, j]
     end
   end
@@ -467,7 +474,7 @@ end
 @doc raw"""
     lie_algebra(R::Field, fam::Symbol, rk::Int; cached::Bool) -> AbstractLieAlgebra{elem_type(R)}
 
-Construct the simple Lie algebra over the ring `R` with Dynkin type given by `fam` and `rk`.
+Construct a simple Lie algebra over the field `R` with Dynkin type given by `fam` and `rk`.
 See `cartan_matrix(fam::Symbol, rk::Int)` for allowed combinations.
 The internally used basis of this Lie algebra is the Chevalley basis.
 
