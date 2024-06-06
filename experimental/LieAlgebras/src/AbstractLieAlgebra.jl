@@ -322,7 +322,7 @@ function lie_algebra(
     [Symbol("h_$i") for i in 1:n_simple_roots(rs)]
   ]
 
-  L = lie_algebra(R, struct_consts, s; cached, check=true) # TODO: remove check
+  L = lie_algebra(R, struct_consts, s; cached, check=false)
   L.root_system = rs
   return L
 end
