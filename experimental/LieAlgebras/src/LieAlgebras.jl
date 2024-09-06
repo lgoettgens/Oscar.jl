@@ -215,6 +215,7 @@ function number_of_simple_roots end
 @alias n_simple_roots number_of_simple_roots
 
 # TODO: move me
+export adjoint_matrix
 export dominant_weights
 
 include("Types.jl")
@@ -248,6 +249,7 @@ include("serialization.jl")
 end # module LieAlgebras
 
 # TODO: move me
+export adjoint_matrix
 export dominant_weights
 
 using .LieAlgebras
