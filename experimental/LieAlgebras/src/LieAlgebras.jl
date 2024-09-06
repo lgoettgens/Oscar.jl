@@ -216,7 +216,9 @@ function number_of_simple_roots end
 
 # TODO: move me
 export adjoint_matrix
+export any_non_ad_nilpotent_element
 export dominant_weights
+export is_ad_nilpotent
 export killing_matrix
 
 include("Types.jl")
@@ -251,7 +253,9 @@ end # module LieAlgebras
 
 # TODO: move me
 export adjoint_matrix
+export any_non_ad_nilpotent_element
 export dominant_weights
+export is_ad_nilpotent
 export killing_matrix
 
 using .LieAlgebras
