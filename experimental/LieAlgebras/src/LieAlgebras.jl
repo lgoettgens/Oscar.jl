@@ -217,6 +217,7 @@ function number_of_simple_roots end
 # TODO: move me
 export adjoint_matrix
 export dominant_weights
+export killing_matrix
 
 include("Types.jl")
 include("Combinatorics.jl")
@@ -251,6 +252,7 @@ end # module LieAlgebras
 # TODO: move me
 export adjoint_matrix
 export dominant_weights
+export killing_matrix
 
 using .LieAlgebras
 

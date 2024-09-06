@@ -102,4 +102,11 @@
       @test coefficients(x * y) == coefficients(y) * adjoint_matrix(x)
     end
   end
+
+  @testset "Killing matrix" begin
+    # Example from Hum72, Ch. 5.1
+    F = QQ
+    L = lie_algebra(F, 2, [[0 1; 0 0], [1 0; 0 -1], [0 0; 1 0]], [:x, :h, :y])
+    @test killing_matrix == matrix(F, [0 0 4; 0 8 0; 4 0 0])
+  end
 end
