@@ -217,7 +217,9 @@ function number_of_simple_roots end
 # TODO: move me
 export adjoint_matrix
 export any_non_ad_nilpotent_element
+export cartan_subalgebra
 export dominant_weights
+export engel_subalgebra
 export is_ad_nilpotent
 export killing_matrix
 
@@ -254,7 +256,9 @@ end # module LieAlgebras
 # TODO: move me
 export adjoint_matrix
 export any_non_ad_nilpotent_element
+export cartan_subalgebra
 export dominant_weights
+export engel_subalgebra
 export is_ad_nilpotent
 export killing_matrix
 
