@@ -1,4 +1,16 @@
-#function is_coxeter_matrix(M::ZZMatrix) end
+function is_coxeter_matrix(M::ZZMatrix)
+  @req is_square(M) "matrix must be square"
+  is_symmetric(M) || return false
+  for i in 1:nrows(M), j in i:ncols(M)
+    entry = M[i, j]
+    if i == j
+      is_one(entry) || return false
+    else
+      is_zero(entry) || entry >= 2 || return false
+    end
+  end
+  return true
+end
 
 @doc raw"""
     coxeter_from_cartan_matrix(mat::ZZMatrix; check::Bool=true) -> Bool
