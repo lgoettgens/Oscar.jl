@@ -18,6 +18,7 @@ export adjoint_matrix
 export any_non_ad_nilpotent_element
 export base_lie_algebra
 export bracket
+export coxeter_matrix_from_cartan_matrix
 export cartan_subalgebra
 export chevalley_basis
 export coerce_to_lie_algebra_elem

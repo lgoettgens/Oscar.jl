@@ -1,5 +1,5 @@
 function coxeter_matrix(W::WeylGroup)
-  return cartan_to_coxeter_matrix(cartan_matrix(root_system(W)))
+  return coxeter_matrix_from_cartan_matrix(cartan_matrix(root_system(W)); check=false)
 end
 
 @doc raw"""
