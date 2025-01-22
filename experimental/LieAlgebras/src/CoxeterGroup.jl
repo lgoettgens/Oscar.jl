@@ -30,6 +30,10 @@ function coxeter_matrix_from_cartan_matrix(gcm::ZZMatrix; check::Bool=true)
   return cm
 end
 
+function coxeter_matrix_entry_from_cartan_matrix(gcm::ZZMatrix, ij::Tuple{Int, Int})
+  return coxeter_matrix_entry_from_cartan_matrix(gcm, ij...)
+end
+
 function coxeter_matrix_entry_from_cartan_matrix(gcm::ZZMatrix, i::Int, j::Int)
   if i == j
     return 1
@@ -47,4 +51,19 @@ function coxeter_matrix_entry_from_cartan_matrix(gcm::ZZMatrix, i::Int, j::Int)
   else
     return 0
   end
+end
+
+function _coxeter_group(::Type{FPGroup}, rk::Int, cox_mat_entry_getter)
+  F = free_group(rk)
+
+  rels = [(gen(F, i) * gen(F, j))^cox_mat_entry_getter(i, j) for i in 1:rk for j in i:rk]
+  G, _ = quo(F, rels)
+  return G
+end
+
+function coxeter_group(::Type{FPGroup}, cox_mat::ZZMatrix; check::Bool=true)
+  @req is_symmetric(M) "matrix must be symmetric"
+  check && @req is_coxeter_matrix(cox_mat) "requires a Coxeter matrix"
+  rk = nrows(cox_mat)
+  return _coxeter_group(FPGroup, rk, Fix1(getindex, cox_mat) ∘ CartesianIndex)
 end

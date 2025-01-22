@@ -25,15 +25,8 @@ The properties of the codomain group and the isomorphism are described in [`fp_g
 """
 function isomorphism(::Type{FPGroup}, W::WeylGroup; set_properties::Bool=true)
   R = root_system(W)
-  F = free_group(rank(R))
-
-  gcm = cartan_matrix(R)
-  rels = [
-    (gen(F, i) * gen(F, j))^coxeter_matrix_entry_from_cartan_matrix(gcm, i, j) for
-    i in 1:rank(R) for j in i:rank(R)
-  ]
-
-  G, _ = quo(F, rels)
+  rk = rank(R)
+  G = _coxeter_group(FPGroup, rk, Fix1(coxeter_matrix_entry_from_cartan_matrix, gcm) ∘ tuple)
 
   if set_properties
     set_is_finite(G, is_finite(W))
