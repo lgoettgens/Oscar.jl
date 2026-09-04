@@ -34,7 +34,7 @@ transitive_group_identification
 
 The functions in this section are wrappers for the GAP library of
 primitive permutation groups up to degree 8191,
-via the GAP package `PrimGrp` [HRR23](@cite).
+via the GAP package `PrimGrp` [HLRR25](@cite).
 See the documentation of this package for more information about
 the source of the data.
 
@@ -91,7 +91,7 @@ perfect_group_identification
 The functions in this section are wrappers for the GAP library of
 the following groups.
 
-The GAP package `SmallGrp` [BEO23](@cite) provides
+The GAP package `SmallGrp` [BEO24](@cite) provides
 
 - those of order at most 2000 (except those of order 1024),
 - those of cubefree order at most 50000,
@@ -102,12 +102,12 @@ The GAP package `SmallGrp` [BEO23](@cite) provides
 - those of squarefree order,
 - those whose order factorises into at most 3 primes.
 
-The GAP package `SOTGrps` [Pan23](@cite) provides
+The GAP package `SOTGrps` [Pan24](@cite) provides
 
 - those whose order factorises into at most 4 primes,
 - those of order $p^4 q$ where $p$ and $q$ are distinct primes.
 
-The GAP package `SglPPow` [VE22](@cite)  provides
+The GAP package `SglPPow` [VE24](@cite)  provides
 
 - those of order $p^7$ for primes $p > 11$,
 - those of order $3^8$.
